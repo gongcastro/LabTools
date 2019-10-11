@@ -1,0 +1,98 @@
+---
+title: "A workflow for collecting, processing and analysing eye-tracker data"
+author: "Gonzalo García-Castro"
+date: "10/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preparing the data
+
+### Linking information
+
+In lab settings, we usually label participants with an ID that commonly consists of a number (e.g. 55563). Using this number to label participants is not the best practice in case our data can potentially be made public. We should not disclose any information that can lead to anyone linking data collected during the experiment to any personal data. Despite the numeric ID does not provide any personal information itself, it should only be used for internal use in the lab. Instead, we should create a new label for each participant. Ideally, this label should be useful for anyone accessing the file, but should by no means provide any information about the participant beyond the data included in the file. IDeally, this label should contain and keyword that corresponds to the experiment, and a unique number. This number can correspond to the order in which participants participated. An example of label could be "CognatePriming_001". A separate ecrypted file should link each label with the participant's ID in the database.
+
+
+### Participant-level data
+
+Experiment session data:
+
+* **ID** (`ID`): A unique made up label that identifies each participant (e.g. *CognatePriming_001*). This label is critical, and should be kept constant across files, as it will be used to link different files containing infomation about the same participant.
+* **Test date** (`DateTest`): Date in which the participant was tested. Numbers should be separated using hyphens and not slashes (e.g. *01-10-2019*).
+
+Between-participants variables:
+
+All variables that provide information abut the version of the experiment a participant has gone through, i.e. manipulated variables, namely:
+
+* **Between-participants condition** (`BetweenCondition`): If you have allocated participants to conditions in a between-participants variable, you should indicate which conditions a specific participant was allocated in.
+* **List** (`list`): if participants are randomised to different lists, we should specify which list the participant has done (e.g. list1). Thisis the case if we have counterbalanced the orther in which conditions or trials have been administered wihtin participants.
+
+Demographic data:
+
+* **Birth date**^[*Age* is not included, as it is a redundant variable: it can be calculated from the test date and birth data.]. Participant's date of birth (e.g. *201*).
+* **Sex**: sex of the baby (e.g. *Male*).
+* **Birth weight**: Weight at birth (e.g. *2650*).
+* **Gestation weeks**: Number of weeks previous to delivery (e.g. *40*)
+* **Caretaker 1 educational attainment**: last educational degree caretaker 1 has succesfully achieved (e.g. *University*)
+* **Caretaker 2 educational attainment**: last educational degree caretaker 2 has succesfully achieved (e.g. *Vocational education*)
+
+Language background information:
+
+* **Degree of exposure to language of interest 1** (`DoE_Catalan`): Percentage of exposure to language of interest 1, as indicated by the database once we have entered the data from the Language Exposure Questionnaire (e.g. *55%*). Create as many of these variables as languages you are interested in (e.g. `DoE_Spanish`).
+* **Degree of exposure to other languages** (`DoE_Others`): degree of exposure to the rest of the languages, summarised as the sum of them (e.g. *45%*). This score should be complementary to the previous ones.
+* **Language profile** (`LanguageProfile`): Should the participant be considered monolingual or bilingual? (e.g. *monolingual*). This variable is redundant, as it is calculate from the two previous ones, but it may be useful to indicate it previous to data processing, as some experiment use this variable to allocate participants in conditions.
+* **Language** (`Language`): Dominant language of the participant (e.g. *Catalan*). If different from that in which the participant was tested, disambiguate both variables as `LanguageDominant` and `LanguageTest`.
+
+### Trial-level data
+
+If trials are designed beforehand (e.g. a specific image goes before another specific image), that is, they are not randomised beyond the order in which trials appear, we should create a table that represents each trial with a row, and each variable of interest about the trial with a column. All trials in all conditions should be included in the same file.
+
+* **Trial ID** (`TrialID`): a label that can either be numeric or text, that provides a unique label to each trial that will/can appear during the task. This label should be kept constant, as it will be used to link files containing information about each trial.
+* **Within-participant Condition** (`WithinCondition`): this variable indicates to which condition does a specific trial correspond to (e.g. *Control*). This variable is only necessary if the same participant underwent several conditions during the task.
+* **Stimuli** (`Stimuli`): What images were depicted during the trial? (e.g. *chair_table*). Indicate only those presenting during the time window of interest of interest.
+
+Target stimulus size:
+
+* **Height in milimeters** (`TargetHeight_mm`): Height of the target AOI when presented in the screen (in real units).
+* **Width in milimeters** (`TargetWidth_mm`): Width of the target AOI when presented in the screen (in real units).
+* **Height in pixels** (`TargetHeight_px`): Height of the target AOI when presented in the screen (in pixels).
+* **Width in pixels** (`TargetWidth_px`): Width of the target AOI when presented in the screen (in pixels).
+
+### Gaze-data
+
+Participant information:
+
+* **ID** (`ID`): This is the same variable specified in the `Participant data` file. We will use this variable to map the demographic data of participants to the data they generated during the eye-tracker task. For this reason, participant's labels in both files should be identical. 
+
+Trial information:
+
+* **Chronological order of the trial** (`TrialChron`): If trials were randomised across participants (i.e. trials were presented in different order for each participant), we should indicate during which trial each eye-tracker sample was taken, following a chronological order. Given that the eye-tracker takes samples in chronological order, this variable will be something like *1, 1, 1, ..., 2, 2, 2, 2, 2, ..., 3, 3, 3, 3, ...,* etc.
+* **Trial ID** (`TrialID`): We include this variable to be able to retrieve information about a specific variable from the trial-level information file (e.g. *30*). For this reason, the label identifying each trial in both files should be identical and unique (no other trial should be identified with the same label).
+
+Sub-trial information:
+
+* **Phase**: within a specific trial, during what phase the sample was taken (e.g. *prime*).
+* **Time** (`SystemTimeStamp`): indicates as precisely as possible (miliseconds at least) the time at which each the eye-tracker took each sample.
+
+Gaze data:
+
+* **Left eye in X** (`lX`): Coordinate in X-axis of the left eye.
+* **Left eye in Y** (`lY`): Coordinate in Y-axis of the left eye.
+* **Left eye validity** (`lValidity`): Validity of the left eye.
+* **Right eye in X** (`rX`): Coordinate in X-axis of the right eye.
+* **Right eye in Y** (`rY`): Coordinate in Y-axis of the right eye.
+* **Right eye validity** (`rValidity`): Validity of the right eye.
+* **Left eye pupil size** (`lPupil`): Pupil size of the left eye.
+* **Left eye pupil size validity** (`lPupilValidity`): Validity of the pupil size of the left eye.
+* **Right eye pupil size** (`rPupil`): Pupil size of the right eye.
+* **Right eye pupil size validity** (`lPupilValidity`): Validity of the pupil size of the right eye.
+* **Left eye distance** (`lDistance`): Distance of the left eye-from the screen.
+* **Right eye distance** (`rDistance`): Distance of the left eye-from the screen.
+* **Target location** (`TargetLocation`): Target position in the screen, as a text label (e.g. *right*). This label will allow us to define where the target AOI was located in each trial.
+
+
+
+
