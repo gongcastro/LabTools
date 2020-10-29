@@ -7,8 +7,8 @@
 image_background <-
   function(
     
-    input  = getwd(),   # input folder
-    output = getwd(),   # output folder
+    input.path  = getwd(),   # input folder
+    output.path = getwd(),   # output folder
     color  = '#808080', # in HEX code
     height = 500,       # height in pixels
     width  = 500        # width in pixels
@@ -20,25 +20,25 @@ image_background <-
     require(magick)   # for manipulating images
     
     # locate files
-    input.filenames  <- list.files(input, full.names = FALSE) 
-    input.paths      <- list.files(input, full.names = TRUE)
+    input.filenames  <- list.files(input.path, full.names = FALSE) 
+    input.path       <- list.files(input.path, full.names = TRUE)
     output.filenames <- input.filenames
-    output.paths     <- paste0(output, '/', output.filenames)
-    n                <- length(input.paths)
+    output.path      <- paste0(output.path, '/', output.filenames)
+    n                <- length(input.path)
     
     # create background
     bg <- image_blank(width = width, height = height, color = color)
     
     # rotate images
     for (i in 1:n){
-      image_read(input.paths[i]) %>%
+      image_read(input.path[i]) %>%
         image_composite(
           bg, .,
           operator = 'Overlay',            # put image over background
           offset = geometry_point(50, 50)  # in the middle
         ) %>%
         image_write(
-          output.paths[i],
+          output.path[i],
           format = 'png')
       message(paste0(i, '/', n, ' backgrounds set'))
     }  
